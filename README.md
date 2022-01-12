@@ -27,4 +27,3 @@
 
 - clone the repo
 - follow the instructions that are in the script.sh file
-"# nextmedia_challenge" 
