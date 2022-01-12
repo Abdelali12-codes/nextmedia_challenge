@@ -1,0 +1,51 @@
+version: '3'
+services:
+
+  nginx:
+    container_name: nginx
+    build:
+      context: ./docker/nginx/
+      dockerfile: Dockerfile
+    networks:
+      waf_net:
+        ipv4_address: 10.10.0.12
+        aliases:
+          - "nginx"
+    volumes:
+      - ./sample:/usr/share/nginx/php
+    expose:
+      - 8080
+    depends_on:
+      - php
+  
+  php:
+    container_name: php
+    image: php:7.1.11-fpm-alpine
+    networks:
+      - "waf_net"
+    volumes:
+      - ./sample:/usr/share/nginx/php
+    expose:
+      - 9000
+
+  haproxy:
+    container_name: haproxy
+    image: haproxy:latest
+    networks:
+      waf_net:
+        ipv4_address: 10.10.0.20
+    volumes:
+      - ./docker/haproxy:/usr/local/etc/haproxy
+    ports:
+      - "80:80"
+    depends_on:
+      - nginx
+
+
+networks:
+    waf_net:
+        driver: bridge
+        ipam:
+            driver: default
+            config:
+                - subnet: 10.10.0.0/16

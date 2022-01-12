@@ -1,0 +1,18 @@
+- name: Run using a project directory
+  hosts: local
+  become: yes
+  become_user: kali
+  tasks:
+    - name: shut down the services
+      docker_compose:
+        project_src: /home/kali/Documents/Challenge
+        state: absent
+
+    - name: Create and start services
+      docker_compose:
+        project_src: /home/kali/Documents/Challenge
+        build: yes
+      register: output
+    
+    - debug:
+        var: output
